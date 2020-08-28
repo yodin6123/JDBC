@@ -1,6 +1,7 @@
 package test02.member;
 
 import java.sql.*;
+import java.util.Map;
 
 /*
 	DAO(Database Access Object): 데이터베이스 관련된 작업만을 수행하는 객체
@@ -51,6 +52,12 @@ public class MemberDAO implements InterMemberDAO {
 			result = pstmt.executeUpdate();
 		} catch (ClassNotFoundException e) {
 			System.out.println(">> ojdbc6.jar 파일이 없습니다. <<");
+		} catch (SQLIntegrityConstraintViolationException e) { 
+			// 아이디 중복 검사는 1. select문으로 동일 id 검색 후 insert 불가 판정 2. 일단 insert하여 에러 발생 시 insert 불가 판정
+			// 2번으로도 가능하다. 에러 발생으로 회원가입 데이터가 전송되지 않기 때문.
+			System.out.println("에러메시지 : " + e.getMessage());
+			System.out.println("에러코드번호 : " + e.getErrorCode());			
+			System.out.println(">>> 아이디가 중복되었습니다. 새로운 아이디를 입력하세요!!");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
@@ -59,5 +66,44 @@ public class MemberDAO implements InterMemberDAO {
 		
 		return result;
 	}// end of memberRegister(MemberDTO member)
+
+	// 로그인처리 메소드 //
+	@Override
+	public MemberDTO login(Map<String, String> paraMap) {
+		
+		MemberDTO member = null;
+		
+		try {
+			Class.forName("oracle.jdbc.driver.OracleDriver");
+			
+			conn = DriverManager.getConnection("jdbc:oracle:thin:@127.0.0.1:1521:xe", "MYORAUSER", "cclass");
+			
+			String sql = // "select userseq, userid, passwd, name, mobile, point, to_char(registerday, 'yyyy-mm-dd') AS registerday, status\n"+
+						 "select name\n"+ // 로그인 시 보여줄 정보가 이름밖에 없기 때문에 이름만 출력한다.
+						 "from jdbc_member\n"+
+						 "where userid = ? and passwd = ?";
+			
+			pstmt = conn.prepareStatement(sql);
+			
+			pstmt.setString(1, paraMap.get("userid"));
+			pstmt.setString(2, paraMap.get("passwd"));
+			
+			rs = pstmt.executeQuery();
+			
+			if(rs.next()) {  // userid는 고유하므로 조건에 맞는 행은 1개만 있다. 따라서 행이 있다면 1행만 출력하면 되므로 if로 써도 된다.
+				member = new MemberDTO();
+				member.setName(rs.getString(1));
+			}
+			
+		} catch (ClassNotFoundException e) {
+			System.out.println(">> ojdbc6.jar 파일이 없습니다. <<");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			close();
+		}
+		
+		return member;
+	}// end of login(Map<String, String> paraMap)
 
 }
