@@ -34,6 +34,11 @@ public class TotalController {
 				case "2":  // 로그인 또는 로그아웃
 					if("로그인".equals(login_logout)) {
 						member = login(sc);  // 로그인시도
+						if(member!=null) {  // 로그인 성공인 경우
+							menu_Board(member, sc);  // 게시판 메뉴에 들어간다.
+						} else {  // 로그인 실패인 경우
+							System.out.println("~~~ 로그인 실패!! ~~~");
+						}
 					} else {
 						member = null;  // 로그아웃
 					}
@@ -112,6 +117,75 @@ public class TotalController {
 
 		return member;
 	}// end of login(Scanner sc)
+	
+	// 게시판 메뉴 //
+	private void menu_Board(MemberDTO loginMember, Scanner sc) {
+		
+		String adminMenu = ("admin".equals(loginMember.getUserid())) ? "10.모든회원정보조회" : "" ;
+		String menuNo = "";
+		do {
+			System.out.println("\n------------ 게시판메뉴["+loginMember.getName()+"님 로그인중..] ------------\n"
+							 + "1.글목록보기 2.글내용보기 3.글쓰기 4.댓글쓰기\n"
+							 + "5.글수정하기 6.글삭제하기 7.최근1주일간 일자별 게시글 작성건수\n"
+							 + "8.이번달 일자별 게시글 작성건수 9.나가기 " + adminMenu + "\n"
+							 + "------------------------------------------------");
+			
+			System.out.print("▷ 메뉴번호 선택 : ");
+			menuNo = sc.nextLine();
+			
+			switch (menuNo) {
+			case "1":  // 글목록보기
+				
+				break;
+			
+			case "2":  // 글내용보기
+				
+				break;
+				
+			case "3":  // 글쓰기
+				
+				break;
+	
+			case "4":  // 댓글쓰기
+				
+				break;
+				
+			case "5":  // 글수정하기
+				
+				break;
+				
+			case "6":  // 글삭제하기
+				
+				break;
+				
+			case "7":  // 최근1주일간 일자별 게시글 작성건수
+				
+				break;
+				
+			case "8":  // 이번달 일자별 게시글 작성건수
+				
+				break;
+				
+			case "9":  // 나가기
+				
+				break;
+				
+			case "10":  // 모든회원정보조회(관리자 전용 메뉴) / 메뉴에 없는 번호(일반회원)
+				if("admin".equals(loginMember.getUserid())) {
+					// 관리자
+				} else {
+					System.out.println(">> 메뉴에 없는 번호입니다. <<\n");  // 일반유저
+				}
+				break;
+
+			default:
+				System.out.println(">> 메뉴에 없는 번호입니다. <<\n");
+				break;
+			}
+			
+		} while (!"9".equals(menuNo));
+		
+	}// end of menu_Board(MemberDTO member, Scanner sc)
 	
 	// Connection 자원 반납 //
 	private void appExit() {

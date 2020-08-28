@@ -87,3 +87,4 @@ nominvalue
 nocycle
 nocache;
 -- Sequence SEQ_COMMENT이(가) 생성되었습니다.
+

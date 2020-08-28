@@ -86,10 +86,10 @@ public class MemberDAO implements InterMemberDAO {
 		try {
 			conn = MyDBConnection.getConn();
 			
-			String sql = // "select userseq, userid, passwd, name, mobile, point, to_char(registerday,
-							// 'yyyy-mm-dd') AS registerday, status\n"+
-					"select name\n" + // 로그인 시 보여줄 정보가 이름밖에 없기 때문에 이름만 출력한다.
-							"from jdbc_member\n" + "where userid = ? and passwd = ?";
+			String sql = "select userseq, userid, passwd, name, mobile, point, "
+					   + "to_char(registerday, 'yyyy-mm-dd') AS registerday, status\n"
+					   + "from jdbc_member\n"
+					   + "where userid = ? and passwd = ?";
 
 			pstmt = conn.prepareStatement(sql);
 
@@ -100,7 +100,14 @@ public class MemberDAO implements InterMemberDAO {
 
 			if (rs.next()) { // userid는 고유하므로 조건에 맞는 행은 1개만 있다. 따라서 행이 있다면 1행만 출력하면 되므로 if로 써도 된다.
 				member = new MemberDTO();
-				member.setName(rs.getString(1));
+				member.setUserseq(rs.getInt("userseq"));
+				member.setUserid(rs.getString("userid"));
+				member.setPasswd(rs.getString("passwd"));
+				member.setName(rs.getString("name"));
+				member.setMobile(rs.getString("mobile"));
+				member.setPoint(rs.getInt("point"));
+				member.setRegisterday(rs.getString("registerday"));
+				member.setStatus(rs.getInt("status"));
 			}
 
 		} catch (SQLException e) {
